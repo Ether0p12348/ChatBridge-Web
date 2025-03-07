@@ -1,0 +1,17 @@
+{
+    "name": "ethanrobins/chatbridge",
+    "description": "ChatBridge Discord translator application's website.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Ethanrobins\\Chatbridge\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ethan Robins",
+            "email": "ethan@ethanrobins.com"
+        }
+    ],
+    "require": {}
+}
