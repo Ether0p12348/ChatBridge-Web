@@ -4,7 +4,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Ethanrobins\\Chatbridge\\": "src/"
+            "Ethanrobins\\Chatbridge\\": "src/",
+            "Ethanrobins\\Chatbridge\\Config\\": "src/config/"
         }
     },
     "authors": [
@@ -13,5 +14,12 @@
             "email": "ethan@ethanrobins.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ext-pdo": "*",
+        "ext-ctype": "*",
+        "ext-curl": "*",
+        "ext-openssl": "*",
+        "scrivo/highlight.php": "^9.18",
+        "symfony/yaml": "^7.2"
+    }
 }

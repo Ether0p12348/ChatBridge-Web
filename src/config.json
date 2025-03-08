@@ -1,0 +1,14 @@
+{
+  "static_pages": [
+    {
+      "type": "page",
+      "name": "Terms of Service",
+      "path": "/terms"
+    },
+    {
+      "type": "page",
+      "name": "Privacy Policy",
+      "path": "/privacy"
+    }
+  ]
+}
