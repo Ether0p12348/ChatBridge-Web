@@ -1,17 +1,16 @@
 <?php
-namespace Ethanrobins\Chatbridge;
+namespace Ethanrobins\Chatbridge\Processing;
 
 use Highlight\Highlighter;
 
 class MarkdownParser
 {
-    // TODO: All H1 will be a document title displayed in nav.
-    // TODO:  - {public=false} will hide the 'document' from the nav
+    // TODO: Static method for returning an array of headers' text (from $originalText).
     // TODO: Make sure all parsing can be escaped.
     // TODO: Copy-to-clipboard buttons for code blocks.
     // TODO:  - Make it possible to turn on/off the copy-to-clipboard button for code blocks.
-    // TODO: Tags for colored text {color=000000}.
-    // TODO: Text Highlighting tags (with color options).
+    // TODO: Tags for colored text {color=000000 {text}}.
+    // TODO: Text Highlighting tags {highlight=000000 {text}}.
     // TODO: Image/Video embedding tags.
     // TODO: A new line is a new line. 2 new lines is a paragraph break. line breaks can be escaped.
     // TODO: Line break tag (---)
@@ -105,6 +104,7 @@ class MarkdownParser
      */
     public function parseDecorations() :MarkdownParser
     {
+        // code blocks ```highlighting\ncode``` TODO: make sure to ignore other formatting
         $this->workingText = preg_replace_callback(
             '/```([\w+\-.#]*)\n([\s\S]*?)```/',
             function ($matches) {
@@ -136,6 +136,7 @@ class MarkdownParser
             $this->workingText
         );
 
+        // code `code` TODO: make sure to ignore other formatting
         $this->workingText = preg_replace_callback(
             '/`([^`]+)`/',
             function ($matches) {
@@ -146,18 +147,21 @@ class MarkdownParser
             $this->workingText
         );
 
+        // bold **bold**
         $this->workingText = preg_replace(
             '/\*\*(.*?)\*\*/s',
             '<strong>$1</strong>',
             $this->workingText
         );
 
+        // italic *italic*
         $this->workingText = preg_replace(
             '/\*(.*?)\*/s',
             '<em>$1</em>',
             $this->workingText
         );
 
+        // underline __underline__
         $this->workingText = preg_replace(
             '/__(.*?)__/s',
             '<u>$1</u>',

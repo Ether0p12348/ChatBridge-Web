@@ -1,10 +1,24 @@
 <?php
-use Ethanrobins\Chatbridge\MarkdownDriver;
+use Ethanrobins\Chatbridge\Processing\MarkdownDriver;
+use Ethanrobins\Chatbridge\Utils;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+Utils::displayErrors();
+
 $file = $_GET['file'] ?? null;
 
-MarkdownDriver::checkMd($file);
+echo $file . "<br>";
 
-// TODO: Build the driver in conjecture with MarkdownDriver class.
+try {
+    $absolutePath = MarkdownDriver::checkMd($file);
+} catch (Exception $e) {
+    die($e->getMessage());
+}
+
+echo "<br>" . $absolutePath . "<br>";
+
+echo MarkdownDriver::getNav($absolutePath);
+
+// TODO: Build the driver with with MarkdownDriver class.
+

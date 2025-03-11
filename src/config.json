@@ -3,12 +3,12 @@
     {
       "type": "page",
       "name": "Terms of Service",
-      "path": "/terms"
+      "path": "/terms.md"
     },
     {
       "type": "page",
       "name": "Privacy Policy",
-      "path": "/privacy"
+      "path": "/privacy.md"
     }
   ]
 }

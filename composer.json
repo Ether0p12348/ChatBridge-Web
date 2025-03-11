@@ -5,7 +5,9 @@
     "autoload": {
         "psr-4": {
             "Ethanrobins\\Chatbridge\\": "src/",
-            "Ethanrobins\\Chatbridge\\Config\\": "src/config/"
+            "Ethanrobins\\Chatbridge\\Config\\": "src/config/",
+            "Ethanrobins\\Chatbridge\\Processing\\": "src/processing/",
+            "Ethanrobins\\Chatbridge\\Exception\\": "src/exception/"
         }
     },
     "authors": [

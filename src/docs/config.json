@@ -1,22 +1,12 @@
 {
   "type": "root",
   "name": "ChatBridge Docs",
-  "home": "/docs/home",
+  "home": "/docs/home.md",
   "pages": [
     {
       "type": "page",
       "name": "Test",
-      "path": "/docs/test"
-    },
-    {
-      "type": "section",
-      "name": "Section Example",
-      "home": "/docs/section/home",
-      "pages": [
-        {
-          "__COMMENT__": "etc."
-        }
-      ]
+      "path": "/docs/test.md"
     }
   ]
 }

@@ -11,8 +11,16 @@ class Utils
      *
      * @return void
      */
-    public static function isWorking() {
+    public static function isWorking(): void
+    {
         echo "Composer is working.";
+    }
+
+    public static function displayErrors(): void
+    {
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
     }
 
     /**
@@ -42,5 +50,24 @@ class Utils
         }
 
         return $data;
+    }
+
+    public static function getConfigPath(string $filePath): string
+    {
+        $srcKeyword = "src/";
+        $srcPos = strpos($filePath, $srcKeyword);
+        if ($srcPos === false) {
+            die("The path is outside of the root src/ directory.");
+        }
+
+        $afterSrc = substr($filePath, $srcPos + strlen($srcKeyword));
+
+        $parts = explode('/', $afterSrc);
+
+        if (empty($parts[0])) {
+            die("This file does not belong to a specific documentation.");
+        }
+
+        return substr($filePath, 0, $srcPos + strlen($srcKeyword) + strlen($parts[0]));
     }
 }
