@@ -2,6 +2,7 @@
 
 namespace Ethanrobins\Chatbridge\Config;
 
+use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Utils;
 
 /**
@@ -99,6 +100,7 @@ class RootConfig extends DocConfig
      *
      * @param string $filePath The path to the configuration JSON file.
      * @return self The constructed RootConfig instance.
+     * @throws MarkdownException
      */
     public static function fromConfig(string $filePath): self
     {
@@ -113,7 +115,7 @@ class RootConfig extends DocConfig
             } else if ($p['type'] === Type::SECTION->value) {
                 $rootPages[] = self::getPagesFromSection($p);
             } else {
-                die("Invalid static page type: " . $p['type']);
+                throw new MarkdownException("Invalid static page type: " . $p['type'], 404);
             }
         }
 

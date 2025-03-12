@@ -2,6 +2,8 @@
 
 namespace Ethanrobins\Chatbridge\Config;
 
+use Ethanrobins\Chatbridge\Exception\MarkdownException;
+
 /**
  * Represents a general configuration item such as a page or section.
  */
@@ -30,6 +32,7 @@ class DocConfig
      *
      * @param string $title The page title.
      * @param string $path The path to the local .md file.
+     * @throws MarkdownException
      */
     public function __construct(string $title, string $path) {
         $this->type = Type::PAGE;
@@ -37,10 +40,10 @@ class DocConfig
         $this->path = $path;
 
         if (!file_exists($this->getAbsolutePath())) {
-            die($this->getAbsolutePath() . " does not exist!");
+            throw new MarkdownException("404 Not Found: " . $this->getAbsolutePath() . " does not exist!", 404);
         }
         if (!is_readable($this->getAbsolutePath())) {
-            die($this->getAbsolutePath() . " is not readable!");
+            throw new MarkdownException("403 Forbidden: " . $this->getAbsolutePath() . " is not readable!", 403);
         }
 
         self::$navItems[] = $this;

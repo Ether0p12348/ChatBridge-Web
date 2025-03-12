@@ -1,4 +1,6 @@
 <?php
+
+use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Processing\MarkdownDriver;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -12,7 +14,8 @@ echo $file . "<br>";
 
 try {
     $absolutePath = MarkdownDriver::checkMd($file);
-} catch (Exception $e) {
+} catch (MarkdownException $e) {
+    echo $e->getDetails() . "<br>";
     die($e->getMessage());
 }
 
