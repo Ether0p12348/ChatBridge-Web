@@ -1,11 +1,11 @@
 {
   "type": "root",
-  "name": "ChatBridge Docs",
-  "home": "/docs/home.md",
+  "title": "ChatBridge Docs",
+  "path": "/docs/home.md",
   "pages": [
     {
       "type": "page",
-      "name": "Test",
+      "title": "Test",
       "path": "/docs/test.md"
     }
   ]

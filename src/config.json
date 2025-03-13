@@ -2,12 +2,12 @@
   "static_pages": [
     {
       "type": "page",
-      "name": "Terms of Service",
+      "title": "Terms of Service",
       "path": "/terms.md"
     },
     {
       "type": "page",
-      "name": "Privacy Policy",
+      "title": "Privacy Policy",
       "path": "/privacy.md"
     }
   ]

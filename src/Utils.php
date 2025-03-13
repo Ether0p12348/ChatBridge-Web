@@ -1,6 +1,8 @@
 <?php
 namespace Ethanrobins\Chatbridge;
 
+use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+
 /**
  * Utility class for general-purpose static methods.
  */
@@ -16,6 +18,15 @@ class Utils
         echo "Composer is working.";
     }
 
+    public static function init(): string
+    {
+        ob_start();
+        ?>
+        <link rel="stylesheet" href="/styles/global.css">
+        <?php
+        return ob_get_clean();
+    }
+
     public static function displayErrors(): void
     {
         ini_set('display_errors', 1);
@@ -28,46 +39,63 @@ class Utils
      *
      * @param string $absoluteFilePath The absolute path to the JSON file.
      * @return array The parsed data from the JSON file as an associative array.
+     * @throws DocumentationConfigurationException
      */
     public static function getJsonData(string $absoluteFilePath): array {
         if (!file_exists($absoluteFilePath)) {
-            die("File not found: " . $absoluteFilePath);
+            throw new DocumentationConfigurationException("File not found: " . $absoluteFilePath);
         }
         if (!is_readable($absoluteFilePath)) {
-            die("File is not readable: " . $absoluteFilePath);
+            throw new DocumentationConfigurationException("File is not readable: " . $absoluteFilePath);
         }
 
         $jsonContents = file_get_contents($absoluteFilePath);
 
         if ($jsonContents === false) {
-            die("Failed to read the JSON file: " . $absoluteFilePath);
+            throw new DocumentationConfigurationException("Failed to read the JSON file: " . $absoluteFilePath);
         }
 
         $data = json_decode($jsonContents, true);
 
         if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-            die("Invalid JSON: ". json_last_error_msg());
+            throw new DocumentationConfigurationException("Invalid JSON: " . json_last_error_msg());
         }
 
         return $data;
     }
 
-    public static function getConfigPath(string $filePath): string
+    /**
+     * Get a .md file's respective configuration file
+     * @param string $absoluteFilePath The absolute path to the .md file.
+     * @return string The absolute path to the config file
+     * @throws DocumentationConfigurationException
+     */
+    public static function getConfigPath(string $absoluteFilePath): string
     {
         $srcKeyword = "src/";
-        $srcPos = strpos($filePath, $srcKeyword);
+        $srcPos = strpos($absoluteFilePath, $srcKeyword);
         if ($srcPos === false) {
-            die("The path is outside of the root src/ directory.");
+            throw new DocumentationConfigurationException("The path is outside of the root src/ directory.");
         }
 
-        $afterSrc = substr($filePath, $srcPos + strlen($srcKeyword));
-
+        $afterSrc = substr($absoluteFilePath, $srcPos + strlen($srcKeyword));
         $parts = explode('/', $afterSrc);
 
         if (empty($parts[0])) {
-            die("This file does not belong to a specific documentation.");
+            throw new DocumentationConfigurationException("This file does not belong to a specific documentation.");
         }
 
-        return substr($filePath, 0, $srcPos + strlen($srcKeyword) + strlen($parts[0]));
+        $rootDir = $parts[0];
+        return substr($absoluteFilePath, 0, $srcPos + strlen($srcKeyword) + strlen($rootDir)) . '/config.json';
+    }
+
+    public static function getLangModal(): string
+    {
+        // TODO: work on LanguageModal (language selector - uses cookies)
+        ob_start();
+        ?>
+        <link rel="stylesheet" href="/styles/lang_modal.css">
+        <?php
+        return ob_get_clean();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace Ethanrobins\Chatbridge\Processing;
 
+use Exception;
 use Highlight\Highlighter;
 
 class MarkdownParser
@@ -60,7 +61,7 @@ class MarkdownParser
         $callback = function($matches) {
             $level = strlen($matches[1]);
             $headingText = $matches[2];
-            return "<h{$level}>{$headingText}</h{$level}>";
+            return "<h$level>$headingText</h$level>";
         };
 
         $pattern = '/^(#{1,6})\s+(.*)$/m';
@@ -80,14 +81,14 @@ class MarkdownParser
         $this->workingText = preg_replace_callback(
             '/^(\d+\.)\s+(.*)$/m',
             function ($matches) {
-                return "<ol><li>{$matches[2]}</li></ol>";
+                return "<ol><li>$matches[2]</li></ol>";
             },
             $this->workingText);
 
         $this->workingText = preg_replace_callback(
             '/^(\-|\*)\s+(.*)$/m',
             function ($matches) {
-                return "<ul><li>{$matches[2]}</li></ul>";
+                return "<ul><li>$matches[2]</li></ul>";
             },
             $this->workingText
         );
@@ -127,10 +128,10 @@ class MarkdownParser
                         htmlspecialchars($result->language, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                         $result->value
                     );
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // If an error occurs (e.g. unsupported language), just escape & wrap.
                     $escaped = htmlspecialchars($code, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    return "<pre><code class=\"hljs\">{$escaped}</code></pre>";
+                    return "<pre><code class=\"hljs\">$escaped</code></pre>";
                 }
             },
             $this->workingText
@@ -142,7 +143,7 @@ class MarkdownParser
             function ($matches) {
                 // Escape HTML inside inline code
                 $escaped = htmlspecialchars($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                return "<code>{$escaped}</code>";
+                return "<code>$escaped</code>";
             },
             $this->workingText
         );

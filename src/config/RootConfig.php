@@ -2,6 +2,7 @@
 
 namespace Ethanrobins\Chatbridge\Config;
 
+use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
 use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -25,6 +26,7 @@ class RootConfig extends DocConfig
      * @param string $title The title of the documentation.
      * @param string $path The root's home.md path.
      * @param array $pages The nested pages or sections at the root level.
+     * @throws MarkdownException|DocumentationConfigurationException
      */
     public function __construct(string $title, string $path, array $pages) {
         parent::__construct($title, $path);
@@ -73,6 +75,7 @@ class RootConfig extends DocConfig
      *
      * @param array $section The section data from the configuration file.
      * @return SectionConfig The constructed section.
+     * @throws MarkdownException
      */
     private static function getPagesFromSection(array $section): SectionConfig
     {
@@ -98,13 +101,13 @@ class RootConfig extends DocConfig
     /**
      * Creates a new RootConfig object from the configuration JSON file.
      *
-     * @param string $filePath The path to the configuration JSON file.
+     * @param string $filePath The absolute path to the configuration JSON file.
      * @return self The constructed RootConfig instance.
-     * @throws MarkdownException
+     * @throws MarkdownException|DocumentationConfigurationException
      */
     public static function fromConfig(string $filePath): self
     {
-        $rootConfigFile = $_SERVER['DOCUMENT_ROOT'] . $filePath;
+        $rootConfigFile = $filePath;
 
         $data = Utils::getJsonData($rootConfigFile);
 

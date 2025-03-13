@@ -7,7 +7,8 @@
             "Ethanrobins\\Chatbridge\\": "src/",
             "Ethanrobins\\Chatbridge\\Config\\": "src/config/",
             "Ethanrobins\\Chatbridge\\Processing\\": "src/processing/",
-            "Ethanrobins\\Chatbridge\\Exception\\": "src/exception/"
+            "Ethanrobins\\Chatbridge\\Exception\\": "src/exception/",
+            "Ethanrobins\\Chatbridge\\Language\\": "src/language/"
         }
     },
     "authors": [

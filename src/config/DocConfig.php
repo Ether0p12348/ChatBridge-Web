@@ -9,6 +9,7 @@ use Ethanrobins\Chatbridge\Exception\MarkdownException;
  */
 class DocConfig
 {
+    // TODO: Figure out a way to include translation data
     /**
      * @var array Stores navigation items created during runtime.
      */

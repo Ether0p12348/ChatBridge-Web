@@ -2,6 +2,7 @@
 namespace Ethanrobins\Chatbridge\Processing;
 
 use Ethanrobins\Chatbridge\Config\RootConfig;
+use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
 use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -11,7 +12,7 @@ class MarkdownDriver
      * Verifies a .md file is readable.
      * @param string|null $path Path from web root
      * @return string The absolute path to .md file. No return if failed.
-     * @throws \Exception
+     * @throws MarkdownException
      */
     public static function checkMd(string|null $path) :string
     {
@@ -34,7 +35,6 @@ class MarkdownDriver
             throw new MarkdownException("403 Forbidden: The requested file is not accessible.", 403, null, $filePath);
         }
 
-        echo "200 File Accessible: " . htmlspecialchars($filePath);
         return $filePath;
     }
 
@@ -42,7 +42,7 @@ class MarkdownDriver
      * Builds and returns the navigation based on the page's config.json and internal headings.
      * @param string $path Absolute path to .md file. Recommended to use {@link MarkdownDriver::checkMd()}
      * @return string The processed navigation in HTML format.
-     * @throws MarkdownException
+     * @throws MarkdownException|DocumentationConfigurationException
      */
     public static function getNav(string $path) :string
     {
