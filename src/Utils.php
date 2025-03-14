@@ -2,6 +2,7 @@
 namespace Ethanrobins\Chatbridge;
 
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+use Ethanrobins\Chatbridge\Language\Lang;
 
 /**
  * Utility class for general-purpose static methods.
@@ -18,13 +19,100 @@ class Utils
         echo "Composer is working.";
     }
 
-    public static function init(): string
+    public static function getStoredLang(): Lang
+    {
+        return (isset($_COOKIE['locale']) && Lang::fromLocale($_COOKIE['locale']) != Lang::UNKNOWN) ? Lang::fromLocale($_COOKIE['locale']) : Lang::fromLocale('en-US');
+    }
+
+    public static function headInit(): string
     {
         ob_start();
         ?>
         <link rel="stylesheet" href="/styles/global.css">
+        <link rel="icon" href="/assets/chatbridge/icon.svg" type="image/svg">
         <?php
         return ob_get_clean();
+    }
+
+    public static function phpInit(): void
+    {
+        // locale uri checks
+        if (!isset($_GET['lang'])) {
+            $browserLocale = "en-US";
+            if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+                $parts = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+                if (!empty($parts[0])) {
+                    $browserLocale = str_replace('_', '-', trim($parts[0]));
+                }
+            }
+
+            $possibleLang = Lang::fromLocale($browserLocale);
+
+            if ($possibleLang === Lang::UNKNOWN) {
+                $possibleLang = Lang::ENGLISH_US;
+            }
+
+            $localeStr = str_replace('-', '_', $possibleLang->getLocale());
+
+            $originalRequestUri = $_SERVER['REQUEST_URI'];
+            $qsPos = strpos($originalRequestUri, '?');
+            $pathOnly = $originalRequestUri;
+            $query = '';
+
+            if ($qsPos !== false) {
+                $pathOnly = substr($originalRequestUri, 0, $qsPos);
+                $query = substr($originalRequestUri, $qsPos); // includes '?'
+            }
+
+            $pathOnly = ltrim($pathOnly, '/');
+
+            $newUrl = '/' . $localeStr . '/' . $pathOnly . $query;
+
+            header('Location: ' . $newUrl, true, 302);
+            exit;
+        } else {
+            $requestedLocale = $_GET['lang'];
+
+            $possibleLang = Lang::fromLocale(str_replace('_', '-', $requestedLocale));
+
+            if ($possibleLang === Lang::UNKNOWN) {
+                if ($possibleLang === Lang::UNKNOWN) {
+                    $possibleLang = Lang::ENGLISH_US;
+                    // Our fallback locale as used in the URL, e.g. "en-US" becomes "en_US"
+                    $localeStr = str_replace('-', '_', $possibleLang->getLocale());
+
+                    // Parse current URL:
+                    $originalRequestUri = $_SERVER['REQUEST_URI'];
+                    $parsedUrl = parse_url($originalRequestUri);
+                    $path = $parsedUrl['path'] ?? '';
+                    $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
+
+                    // Use a regex similar to your nginx rewrite to see if the first segment is locale-like.
+                    // This pattern: 2 letters followed by an optional dash/underscore and 2-5 alphanum characters.
+                    if (preg_match('#^/([a-zA-Z]{2}(?:[-_][a-zA-Z0-9]{0,5})?)(/.*)?$#', $path, $matches)) {
+                        // $matches[1] is the invalid locale; $matches[2] is the rest of the path (may be empty)
+                        $restPath = $matches[2] ?? '';
+                    } else {
+                        // If the path doesn't start with a locale-like segment, keep it intact.
+                        $restPath = $path;
+                    }
+
+                    // Build the canonical URL with the fallback locale in place of the first segment.
+                    $newUrl = '/' . $localeStr . '/' . ltrim($restPath, '/') . $query;
+                    header('Location: ' . $newUrl, true, 302);
+                    exit;
+                }
+            } else {
+                $finalLocale = $possibleLang->getLocale();
+                setcookie('locale', $finalLocale, [
+                    'expires'  => time() + 31536000, // 1 year
+                    'path'     => '/',
+                    'httponly' => true,
+                    'secure'   => true, // if you're using https
+                    'samesite' => 'Lax',
+                ]);
+            }
+        }
     }
 
     public static function displayErrors(): void

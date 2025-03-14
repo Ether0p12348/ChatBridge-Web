@@ -1,23 +1,58 @@
 :root {
-    /* TODO: Modify global colors to match the ChatBridge color scheme */
+    /* Palette (purple) */
+    --p:     rgba(100, 0,   255, 1);
+    /* purple-white */
+    --p-20w: rgba(131, 51,  255, 1); /* x + ((255 - x) * a) */
+    --p-40w: rgba(162, 102, 255, 1);
+    --p-60w: rgba(193, 153, 255, 1);
+    --p-80w: rgba(224, 204, 255, 1);
+    /* purple-black */
+    --p-20b: rgba(80,  0,   204, 1); /* x * (1 - a) */
+    --p-40b: rgba(60,  0,   153, 1);
+    --p-60b: rgba(40,  0,   102, 1);
+    --p-80b: rgba(20,  0,   51,  1);
+    /* purple-alpha */
+    --p-80a: rgba(100, 0,   255, 0.8);
+    --p-60a: rgba(100, 0,   255, 0.6);
+    --p-40a: rgba(100, 0,   255, 0.4);
+    --p-20a: rgba(100, 0,   255, 0.2);
+    /* Palette (blue) */
+    --b:     rgba(30,  215, 255, 1);
+    /* blue-white */
+    --b-20w: rgba(75,  223, 255, 1);
+    --b-40w: rgba(120, 231, 255, 1);
+    --b-60w: rgba(165, 239, 255, 1);
+    --b-80w: rgba(210, 247, 255, 1);
+    /* blue-black */
+    --b-20b: rgba(24,  172, 204, 1);
+    --b-40b: rgba(18,  129, 153, 1);
+    --b-60b: rgba(12,  86,  102, 1);
+    --b-80b: rgba(6,   43,  51,  1);
+    /* blue-alpha */
+    --b-80a: rgba(30,  215, 255, 0.8);
+    --b-60a: rgba(30,  215, 255, 0.6);
+    --b-40a: rgba(30,  215, 255, 0.4);
+    --b-20a: rgba(30,  215, 255, 0.2);
+
+    /* Variables */
     --background-color: #333;
     --light-background-color: #fff;
 
     --text-color: #fff;
-    --light-text-color: #000;
+    --light-text-color: #333;
 
     --link-color: #6495ed;
     --link-hover-color: #4169e1;
     --light-link-color: #4169e1;
     --light-link-hover-color: #324faa;
 
-    --accent-color: rgba(250, 103, 42, 1);
-    --subaccent-color: rgba(255, 137, 90, 1);
-    --light-accent-color: rgba(255, 78, 0, 1);
-    --light-subaccent-color: rgba(255, 118, 61, 1);
+    --accent-color: var(--b);
+    --subaccent-color: var(--b-40w);
+    --light-accent-color: var(--b-20b);
+    --light-subaccent-color: var(--b);
 
-    --button-color: rgba(255, 78, 0, 0.8); /* same as --accent-color with alpha of 0.8 */
-    --button-hover-color: rgba(250, 103, 42, 1); /* same as --accent-color */
+    --button-color: var(--b-80a); /* same as --accent-color with alpha of 0.8 */
+    --button-hover-color: var(--b); /* same as --accent-color */
 }
 
 @font-face {
@@ -69,6 +104,9 @@ body *::-webkit-scrollbar-thumb {
     border-radius: 1vh;
 }
 
+.svg-text-color {
+    fill: var(--text-color);
+}
 
 @media screen and (prefers-color-scheme: light) {
     html, body {
@@ -80,5 +118,8 @@ body *::-webkit-scrollbar-thumb {
     }
     body *::-webkit-scrollbar-thumb {
         background: var(--light-accent-color);
+    }
+    .svg-text-color {
+        fill: var(--light-text-color);
     }
 }

@@ -3,44 +3,42 @@
 namespace Ethanrobins\Chatbridge\Language;
 
 use Ethanrobins\Chatbridge\Exception\LanguageException;
-use Lang;
-use LangPair;
 use ReflectionClass;
 
 class LangSet
 {
-    private LangPair $bg;
-    private LangPair $zh_CN;
-    private LangPair $zh_TW;
-    private LangPair $hr;
-    private LangPair $cs;
-    private LangPair $da;
-    private LangPair $nl;
-    private LangPair $en_GB;
-    private LangPair $en_US;
-    private LangPair $fi;
-    private LangPair $fr;
-    private LangPair $de;
-    private LangPair $el;
-    private LangPair $hi;
-    private LangPair $hu;
-    private LangPair $id;
-    private LangPair $it;
-    private LangPair $ja;
-    private LangPair $ko;
-    private LangPair $lt;
-    private LangPair $no;
-    private LangPair $pl;
-    private LangPair $pt_BR;
-    private LangPair $ro;
-    private LangPair $ru;
-    private LangPair $es_ES;
-    private LangPair $es_419;
-    private LangPair $sv;
-    private LangPair $th;
-    private LangPair $tr;
-    private LangPair $uk;
-    private LangPair $vi;
+    private LangPair $bulgarian;
+    private LangPair $chinese_china;
+    private LangPair $chinese_taiwan;
+    private LangPair $croatian;
+    private LangPair $czech;
+    private LangPair $danish;
+    private LangPair $dutch;
+    private LangPair $english_uk;
+    private LangPair $english_us;
+    private LangPair $finnish;
+    private LangPair $french;
+    private LangPair $german;
+    private LangPair $greek;
+    private LangPair $hindi;
+    private LangPair $hungarian;
+    private LangPair $indonesian;
+    private LangPair $italian;
+    private LangPair $japanese;
+    private LangPair $korean;
+    private LangPair $lithuanian;
+    private LangPair $norwegian;
+    private LangPair $polish;
+    private LangPair $portuguese_brazilian;
+    private LangPair $romanian_romania;
+    private LangPair $russian;
+    private LangPair $spanish;
+    private LangPair $spanish_latam;
+    private LangPair $swedish;
+    private LangPair $thai;
+    private LangPair $turkish;
+    private LangPair $ukrainian;
+    private LangPair $vietnamese;
 
     /**
      * @param Lang $lang
@@ -51,7 +49,7 @@ class LangSet
     public function set(Lang $lang, string $string): LangSet
     {
         if ($lang !== Lang::UNKNOWN) {
-            $this->{str_replace('-', "_", $lang->getLocale())} = new LangPair($lang, $string);
+            $this->{strtolower($lang->name)} = new LangPair($lang, $string);
         } else {
             throw new LanguageException("You cannot set an unknown language");
         }
@@ -65,9 +63,9 @@ class LangSet
     public function get(Lang $lang): LangPair
     {
         if ($lang === Lang::UNKNOWN) {
-            return $this->en_US;
+            return $this->english_us;
         } else {
-            return $this->{str_replace('-', "_", $lang->getLocale())};
+            return $this->{strtolower($lang->name)};
         }
     }
 

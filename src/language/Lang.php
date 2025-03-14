@@ -1,4 +1,5 @@
 <?php
+namespace Ethanrobins\Chatbridge\Language;
 
 /**
  * Enum Lang
@@ -124,7 +125,7 @@ enum Lang
             self::TURKISH => "tr",
             self::UKRAINIAN => "uk",
             self::VIETNAMESE => "vi",
-            default => self::ENGLISH_US->getLocale()()
+            default => self::ENGLISH_US->getLocale()
         };
     }
 
@@ -236,7 +237,7 @@ enum Lang
      * @param string $locale The `ISO 3166-1` locale
      * @return Lang The respective {@link Lang}
      */
-    public function fromLocale(string $locale): Lang
+    public static function fromLocale(string $locale): Lang
     {
         foreach (Lang::cases() as $lang) {
             if ($lang->getLocale() === $locale) {
@@ -251,7 +252,7 @@ enum Lang
      * @param string $locale The Discord locale
      * @return Lang The respective {@link Lang}
      */
-    public function fromDiscordLocale(string $locale): Lang
+    public static function fromDiscordLocale(string $locale): Lang
     {
         foreach (Lang::cases() as $lang) {
             if ($lang->getDiscordLocale() === $locale) {

@@ -1,4 +1,5 @@
 <?php
+namespace Ethanrobins\Chatbridge\Language;
 
 class LangPair
 {
