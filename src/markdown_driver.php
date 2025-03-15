@@ -7,8 +7,8 @@ use Ethanrobins\Chatbridge\Utils;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-Utils::displayErrors();
 Utils::phpInit();
+$lang = Utils::getStoredLang();
 
 $file = $_GET['file'] ?? null;
 
@@ -38,7 +38,7 @@ try {
     } catch (DocumentationConfigurationException|MarkdownException $e) {
         print_r($e);
     }
-    echo Utils::getLangModal();
+    echo Utils::getLangModal($lang);
     ?>
 </body>
 </html>

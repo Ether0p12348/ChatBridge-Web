@@ -93,7 +93,8 @@ body * {
     cursor: default;
     font-family: Poppins, sans-serif;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) transparent;
+    scrollbar-color: var(--p-40w) transparent;
+    transition: background-color 0.1s ease-in-out;
 }
 body *::-webkit-scrollbar {
     width: 0.5vh;
@@ -114,7 +115,7 @@ body *::-webkit-scrollbar-thumb {
         color: var(--light-text-color);
     }
     body * {
-        scrollbar-color: var(--light-accent-color) transparent;
+        scrollbar-color: var(--p-60w) transparent;
     }
     body *::-webkit-scrollbar-thumb {
         background: var(--light-accent-color);

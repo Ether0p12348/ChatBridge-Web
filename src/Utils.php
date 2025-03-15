@@ -1,8 +1,11 @@
 <?php
 namespace Ethanrobins\Chatbridge;
 
+use Ethanrobins\Chatbridge\Assets\SVG;
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+use Ethanrobins\Chatbridge\Exception\LanguageException;
 use Ethanrobins\Chatbridge\Language\Lang;
+use Ethanrobins\Chatbridge\Language\LangSet;
 
 /**
  * Utility class for general-purpose static methods.
@@ -21,7 +24,14 @@ class Utils
 
     public static function getStoredLang(): Lang
     {
-        return (isset($_COOKIE['locale']) && Lang::fromLocale($_COOKIE['locale']) != Lang::UNKNOWN) ? Lang::fromLocale($_COOKIE['locale']) : Lang::fromLocale('en-US');
+        if (isset($_GET['lang']) && isset($_COOKIE['locale']) && str_replace('_', '-', $_GET['lang']) === $_COOKIE['locale']) {
+            return (Lang::fromLocale($_COOKIE['locale']) != Lang::UNKNOWN) ? Lang::fromLocale($_COOKIE['locale']) : Lang::fromLocale('en-US');
+        } else if (!isset($_COOKIE['locale'])) {
+            // cookies aren't supported by client (discord scraper or non-browser client)
+            return Lang::fromLocale(str_replace('_', '-', $_GET['lang']) ?? 'en_US');
+        }
+        header('Location: ' . $_SERVER['REQUEST_URI'], true, 302);
+        exit;
     }
 
     public static function headInit(): string
@@ -36,7 +46,6 @@ class Utils
 
     public static function phpInit(): void
     {
-        // locale uri checks
         if (!isset($_GET['lang'])) {
             $browserLocale = "en-US";
             if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
@@ -78,26 +87,19 @@ class Utils
             if ($possibleLang === Lang::UNKNOWN) {
                 if ($possibleLang === Lang::UNKNOWN) {
                     $possibleLang = Lang::ENGLISH_US;
-                    // Our fallback locale as used in the URL, e.g. "en-US" becomes "en_US"
                     $localeStr = str_replace('-', '_', $possibleLang->getLocale());
 
-                    // Parse current URL:
                     $originalRequestUri = $_SERVER['REQUEST_URI'];
                     $parsedUrl = parse_url($originalRequestUri);
                     $path = $parsedUrl['path'] ?? '';
                     $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
 
-                    // Use a regex similar to your nginx rewrite to see if the first segment is locale-like.
-                    // This pattern: 2 letters followed by an optional dash/underscore and 2-5 alphanum characters.
                     if (preg_match('#^/([a-zA-Z]{2}(?:[-_][a-zA-Z0-9]{0,5})?)(/.*)?$#', $path, $matches)) {
-                        // $matches[1] is the invalid locale; $matches[2] is the rest of the path (may be empty)
                         $restPath = $matches[2] ?? '';
                     } else {
-                        // If the path doesn't start with a locale-like segment, keep it intact.
                         $restPath = $path;
                     }
 
-                    // Build the canonical URL with the fallback locale in place of the first segment.
                     $newUrl = '/' . $localeStr . '/' . ltrim($restPath, '/') . $query;
                     header('Location: ' . $newUrl, true, 302);
                     exit;
@@ -113,6 +115,8 @@ class Utils
                 ]);
             }
         }
+
+        Utils::displayErrors();
     }
 
     public static function displayErrors(): void
@@ -177,12 +181,74 @@ class Utils
         return substr($absoluteFilePath, 0, $srcPos + strlen($srcKeyword) + strlen($rootDir)) . '/config.json';
     }
 
-    public static function getLangModal(): string
+    public static function getLangModal(Lang $activeLang): string
     {
-        // TODO: work on LanguageModal (language selector - uses cookies)
+        $buttonTitle = new LangSet();
+        try {
+            $buttonTitle->set(Lang::BULGARIAN, "Преведи страницата");
+            $buttonTitle->set(Lang::CHINESE_CHINA, "翻译页面");
+            $buttonTitle->set(Lang::CHINESE_TAIWAN, "翻譯頁面");
+            $buttonTitle->set(Lang::CROATIAN, "Prevedi stranicu");
+            $buttonTitle->set(Lang::CZECH, "Přeložit stránku");
+            $buttonTitle->set(Lang::DANISH, "Oversæt side");
+            $buttonTitle->set(Lang::DUTCH, "Pagina vertalen");
+            $buttonTitle->set(Lang::ENGLISH_UK, "Translate Page");
+            $buttonTitle->set(Lang::ENGLISH_US, "Translate Page");
+            $buttonTitle->set(Lang::FINNISH, "Käännä sivu");
+            $buttonTitle->set(Lang::FRENCH, "Traduire la page");
+            $buttonTitle->set(Lang::GERMAN, "Seite übersetzen");
+            $buttonTitle->set(Lang::GREEK, "Μετάφραση σελίδας");
+            $buttonTitle->set(Lang::HINDI, "पृष्ठ का अनुवाद करें");
+            $buttonTitle->set(Lang::HUNGARIAN, "Oldal fordítása");
+            $buttonTitle->set(Lang::INDONESIAN, "Terjemahkan Halaman");
+            $buttonTitle->set(Lang::ITALIAN, "Traduci pagina");
+            $buttonTitle->set(Lang::JAPANESE, "ページを翻訳");
+            $buttonTitle->set(Lang::KOREAN, "페이지 번역");
+            $buttonTitle->set(Lang::LITHUANIAN, "Išversti puslapį");
+            $buttonTitle->set(Lang::NORWEGIAN, "Oversett side");
+            $buttonTitle->set(Lang::POLISH, "Przetłumacz stronę");
+            $buttonTitle->set(Lang::PORTUGUESE_BRAZILIAN, "Traduzir página");
+            $buttonTitle->set(Lang::ROMANIAN_ROMANIA, "Traduce pagina");
+            $buttonTitle->set(Lang::RUSSIAN, "Перевести страницу");
+            $buttonTitle->set(Lang::SPANISH, "Traducir página");
+            $buttonTitle->set(Lang::SPANISH_LATAM, "Traducir página");
+            $buttonTitle->set(Lang::SWEDISH, "Översätt sida");
+            $buttonTitle->set(Lang::THAI, "แปลหน้า");
+            $buttonTitle->set(Lang::TURKISH, "Sayfayı Çevir");
+            $buttonTitle->set(Lang::UKRAINIAN, "Перекласти сторінку");
+            $buttonTitle->set(Lang::VIETNAMESE, "Dịch trang");
+        } catch (LanguageException $e) {
+            die($e->getMessage());
+        }
+
         ob_start();
         ?>
         <link rel="stylesheet" href="/styles/lang_modal.css">
+
+        <div class="lang_modal_container">
+            <label title="<?php echo $buttonTitle->get($activeLang)->getString(); ?>" class="lang_modal_toggle_container" for="lang_modal_toggle_checkbox">
+                <?php echo SVG::LANGUAGE->get("8vh", "8vh"); ?>
+                <input type="checkbox" id="lang_modal_toggle_checkbox" hidden="hidden">
+            </label>
+            <div class="lang_modal_selector_container">
+            <?php
+            foreach (Lang::cases() as $l) {
+                if ($l != Lang::UNKNOWN) {
+                ?>
+                <a class="lang_modal_selector<?php echo $l === $activeLang ? " active" : ""; ?>" href="<?php echo preg_replace('/\b' . preg_quote(str_replace('-', '_', $activeLang->getLocale()), '/') . '\b|' . preg_quote(str_replace('_', '-', $activeLang->getLocale()), '/') . '\b/', str_replace('-', '_', $l->getLocale()), $_SERVER['REQUEST_URI']); ?>">
+                    <!-- TODO: Maybe make the entire link background a low-opacity, slightly blurred image of the country's flag with/without the icon -->
+                    <div class="lang_modal_icon" style="background-image: url(<?php echo $l->getFlag(); ?>);"></div>
+                    <div class="lang_modal_text_container">
+                        <div class="lang_modal_text"><?php echo $l->getNativeName(); ?></div>
+                        <div class="lang_modal_subtext"><?php echo $l->getLanguageNameInLanguage($activeLang); ?></div>
+                    </div>
+                </a>
+                <?php
+                }
+            }
+            ?>
+            </div>
+        </div>
         <?php
         return ob_get_clean();
     }

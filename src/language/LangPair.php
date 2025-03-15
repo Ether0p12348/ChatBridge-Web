@@ -27,4 +27,9 @@ class LangPair
         $this->string = $string;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->getString();
+    }
 }

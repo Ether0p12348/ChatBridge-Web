@@ -1,0 +1,202 @@
+.lang_modal_container {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    justify-items: start;
+    overflow: hidden;
+    top: 2vh;
+    right: 2vh;
+
+    height: 8vh;
+    width: 8vh;
+    max-width: calc(100vw - 4vh);
+
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(2vh);
+    --webkit-backdrop-filter: blur(2vh);
+    border-radius: 1vh;
+
+    box-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
+
+    transition: height 0.3s ease-in-out, width 0.3s ease-in-out;
+
+    z-index: 100;
+}
+.lang_modal_container:has(#lang_modal_toggle_checkbox:checked) {
+    height: 75vh;
+    width: 50vh;
+}
+.lang_modal_toggle_container {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+
+    height: 8vh;
+    width: 8vh;
+
+    border-radius: 1vh;
+
+    filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.5));
+    --webkit-filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.5));
+
+    transition: top 0.3s ease-in-out, left 0.3s ease-in-out;
+
+    z-index: 101;
+}
+.lang_modal_toggle_container:has(#lang_modal_toggle_checkbox:checked) {
+    top: 1vh;
+    left: 1vh;
+}
+.lang_modal_toggle_container, .lang_modal_toggle_container * {
+    cursor: pointer;
+}
+.lang_modal_toggle_container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.lang_modal_selector_container {
+    margin: 10vh 0 0;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    justify-items: start;
+    overflow: auto;
+
+    width: 50vh; /* same as opened .lang_modal_container */
+    max-width: calc(100vw - 4vh); /* same as opened .lang_modal_container */
+
+    flex-grow: 1; /* this section determines height */
+    flex-shrink: 1;
+    flex-basis: 0;
+}
+.lang_modal_selector {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: center;
+    justify-items: start;
+    overflow: clip;
+
+    text-decoration: none;
+    color: inherit;
+
+    height: fit-content;
+    width: 48vh; /* -2vh as opened .lang_modal_container */
+    max-width: calc(100vw - 6vh); /* -2vh as opened .lang_modal_container */
+
+    border-radius: 1vh;
+}
+.lang_modal_selector, .lang_modal_selector * {
+    cursor: pointer;
+}
+.lang_modal_selector:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.lang_modal_selector.active {
+    background-color: var(--b-20a);
+}
+.lang_modal_icon {
+    margin: 0 1vh 0 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: hidden;
+
+    height: 8vh;
+    width: 8vh;
+
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.5));
+    --webkit-filter: drop-shadow(0 0 1vh rgba(0, 0, 0, 0.5));
+
+    order: 1;
+}
+.lang_modal_text_container {
+    margin: 0 0 0 1vh;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: start; /* may have to swap this */
+    justify-content: center; /* and this */
+    justify-items: start;
+    overflow: visible;
+
+    height: 10vh;
+
+    flex-grow: 1; /* this section determines width */
+    flex-shrink: 1;
+    flex-basis: 0;
+
+    order: 2;
+}
+.lang_modal_text_container * {
+    text-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
+}
+.lang_modal_text {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: visible;
+
+    width: fit-content;
+    height: fit-content;
+    text-align: left;
+    font-size: 3vh;
+    line-height: 3vh;
+
+    order: 1;
+}
+.lang_modal_subtext {
+    margin: 1vh 0 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: visible;
+
+    width: fit-content;
+    height: fit-content;
+    text-align: left;
+    font-size: 2.5vh;
+    line-height: 2.5vh;
+
+    color: #999;
+
+    order: 2;
+}
+
+@media screen and (prefers-color-scheme: light) {
+    .lang_modal_container {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    .lang_modal_toggle_container {
+        filter: drop-shadow(0 0 1vh rgba(255, 255, 255, 0.5));
+        --webkit-filter: drop-shadow(0 0 1vh rgba(255, 255, 255, 0.5));
+    }
+    .lang_modal_toggle_container:hover, .lang_modal_selector:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    .lang_modal_text_container * {
+        text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    }
+}

@@ -8,7 +8,6 @@ use Ethanrobins\Chatbridge\Utils;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-Utils::displayErrors();
 Utils::phpInit();
 $lang = Utils::getStoredLang();
 
@@ -277,6 +276,7 @@ Sứ mệnh của chúng tôi là xây dựng một cộng đồng trực tuyế
 </head>
 <body>
     <?php
+    echo Utils::getLangModal($lang);
     echo SVG::CHATBRIDGE_ICON->get("50vh", "50vh") . "<br>";
     echo SVG::CHATBRIDGE_LOGO->get(null, "50vh") . "<br>";
     ?>
