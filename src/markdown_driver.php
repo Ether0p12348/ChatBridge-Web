@@ -2,6 +2,7 @@
 
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
 use Ethanrobins\Chatbridge\Exception\MarkdownException;
+use Ethanrobins\Chatbridge\Language\LangDriver;
 use Ethanrobins\Chatbridge\Processing\MarkdownDriver;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -9,7 +10,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 Utils::showConstruction();
 Utils::phpInit();
-$lang = Utils::getStoredLang();
+$lang = LangDriver::getStoredLang();
 
 $file = $_GET['file'] ?? null;
 
@@ -20,7 +21,7 @@ try {
     die($e->getMessage());
 }
 
-// TODO: Build the driver with with MarkdownDriver class.
+// TODO: Build the driver with MarkdownDriver class.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,12 +35,12 @@ try {
 </head>
 <body>
     <?php
+    echo LangDriver::getLangModal();
     try {
         echo MarkdownDriver::getNav($absolutePath);
     } catch (DocumentationConfigurationException|MarkdownException $e) {
         print_r($e);
     }
-    echo Utils::getLangModal($lang);
     ?>
 </body>
 </html>

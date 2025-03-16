@@ -5,6 +5,7 @@ use Ethanrobins\Chatbridge\Assets\SVG;
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
 use Ethanrobins\Chatbridge\Exception\LanguageException;
 use Ethanrobins\Chatbridge\Language\Lang;
+use Ethanrobins\Chatbridge\Language\LangDriver;
 use Ethanrobins\Chatbridge\Language\LangSet;
 
 /**
@@ -12,11 +13,57 @@ use Ethanrobins\Chatbridge\Language\LangSet;
  */
 class Utils
 {
+    /**
+     * @var bool {@link Utils::phpInit()} should only be called once per page load. This ensures that's true.
+     */
     static private bool $phpInitCalled = false;
+    /**
+     * Gets whether {@link Utils::phpInit()} has been called already using {@link Utils::$phpInitCalled}.
+     * @return bool
+     */
+    public static function phpInitCalled(): bool
+    {
+        return self::$phpInitCalled;
+    }
+
+    /**
+     * @var bool {@link Utils::headInit()} should only be called once per page load. This ensures that's true.
+     */
     static private bool $headInitCalled = false;
+    /**
+     * Gets whether {@link Utils::headInit()} has been called already using {@link Utils::$headInitCalled}.
+     * @return bool
+     */
+    public static function headInitCalled(): bool
+    {
+        return self::$headInitCalled;
+    }
+
+    /**
+     * @var bool {@link Utils::displayErrors()} should only be called once per page load. This ensures that's true.
+     */
     static private bool $displayErrorsCalled = false;
-    static private bool $langModalRetrieved = false;
+    /**
+     * Gets whether {@link Utils::displayErrors()} has been called already using {@link Utils::$displayErrorsCalled}.
+     * @return bool
+     */
+    public static function displayErrorsCalled(): bool
+    {
+        return self::$displayErrorsCalled;
+    }
+
+    /**
+     * @var bool {@link Utils::showConstruction()} should only be called once per page load. This ensures that's true.
+     */
     static private bool $showingConstruction = false;
+    /**
+     * Gets whether {@link Utils::showConstruction()} has been called already using {@link Utils::$showingConstruction}.
+     * @return bool
+     */
+    public static function showingConstruction(): bool
+    {
+        return self::$showingConstruction;
+    }
 
     /**
      * Outputs a simple message indicating that Composer is set up correctly.
@@ -28,18 +75,10 @@ class Utils
         echo "Composer is working.";
     }
 
-    public static function getStoredLang(): Lang
-    {
-        if (isset($_GET['lang']) && isset($_COOKIE['locale']) && str_replace('_', '-', $_GET['lang']) === $_COOKIE['locale']) {
-            return (Lang::fromLocale($_COOKIE['locale']) != Lang::UNKNOWN) ? Lang::fromLocale($_COOKIE['locale']) : Lang::fromLocale('en-US');
-        } else if (!isset($_COOKIE['locale'])) {
-            // cookies aren't supported by client (discord scraper or non-browser client)
-            return Lang::fromLocale(str_replace('_', '-', $_GET['lang']) ?? 'en_US');
-        }
-        header('Location: ' . $_SERVER['REQUEST_URI'], true, 302);
-        exit;
-    }
-
+    /**
+     * Initialize global `<head>` data
+     * @return string html `<head>` tags
+     */
     public static function headInit(): string
     {
         if (!self::$headInitCalled) {
@@ -54,84 +93,23 @@ class Utils
         return "";
     }
 
+    /**
+     * Initialize global php.
+     * @return void
+     */
     public static function phpInit(): void
     {
         if (!self::$phpInitCalled) {
-            if (!isset($_GET['lang'])) {
-                $browserLocale = "en-US";
-                if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-                    $parts = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-                    if (!empty($parts[0])) {
-                        $browserLocale = str_replace('_', '-', trim($parts[0]));
-                    }
-                }
-
-                $possibleLang = Lang::fromLocale($browserLocale);
-
-                if ($possibleLang === Lang::UNKNOWN) {
-                    $possibleLang = Lang::ENGLISH_US;
-                }
-
-                $localeStr = str_replace('-', '_', $possibleLang->getLocale());
-
-                $originalRequestUri = $_SERVER['REQUEST_URI'];
-                $qsPos = strpos($originalRequestUri, '?');
-                $pathOnly = $originalRequestUri;
-                $query = '';
-
-                if ($qsPos !== false) {
-                    $pathOnly = substr($originalRequestUri, 0, $qsPos);
-                    $query = substr($originalRequestUri, $qsPos); // includes '?'
-                }
-
-                $pathOnly = ltrim($pathOnly, '/');
-
-                $newUrl = '/' . $localeStr . '/' . $pathOnly . $query;
-
-                header('Location: ' . $newUrl, true, 302);
-                exit;
-            } else {
-                $requestedLocale = $_GET['lang'];
-
-                $possibleLang = Lang::fromLocale(str_replace('_', '-', $requestedLocale));
-
-                if ($possibleLang === Lang::UNKNOWN) {
-                    if ($possibleLang === Lang::UNKNOWN) {
-                        $possibleLang = Lang::ENGLISH_US;
-                        $localeStr = str_replace('-', '_', $possibleLang->getLocale());
-
-                        $originalRequestUri = $_SERVER['REQUEST_URI'];
-                        $parsedUrl = parse_url($originalRequestUri);
-                        $path = $parsedUrl['path'] ?? '';
-                        $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
-
-                        if (preg_match('#^/([a-zA-Z]{2}(?:[-_][a-zA-Z0-9]{0,5})?)(/.*)?$#', $path, $matches)) {
-                            $restPath = $matches[2] ?? '';
-                        } else {
-                            $restPath = $path;
-                        }
-
-                        $newUrl = '/' . $localeStr . '/' . ltrim($restPath, '/') . $query;
-                        header('Location: ' . $newUrl, true, 302);
-                        exit;
-                    }
-                } else {
-                    $finalLocale = $possibleLang->getLocale();
-                    setcookie('locale', $finalLocale, [
-                        'expires' => time() + 31536000, // 1 year
-                        'path' => '/',
-                        'httponly' => true,
-                        'secure' => true, // if you're using https
-                        'samesite' => 'Lax',
-                    ]);
-                }
-            }
-
+            LangDriver::langInit();
             self::$phpInitCalled = true;
             Utils::displayErrors();
         }
     }
 
+    /**
+     * Display errors for debugging purposes.
+     * @return void
+     */
     public static function displayErrors(): void
     {
         if (!self::$displayErrorsCalled) {
@@ -173,9 +151,9 @@ class Utils
     }
 
     /**
-     * Get a .md file's respective configuration file
+     * Get a .md file's respective configuration file.
      * @param string $absoluteFilePath The absolute path to the .md file.
-     * @return string The absolute path to the config file
+     * @return string The absolute path to the config file.
      * @throws DocumentationConfigurationException
      */
     public static function getConfigPath(string $absoluteFilePath): string
@@ -197,12 +175,17 @@ class Utils
         return substr($absoluteFilePath, 0, $srcPos + strlen($srcKeyword) + strlen($rootDir)) . '/config.json';
     }
 
+    /**
+     * Overwrite the current page with the construction page (place at the very beginning of the page).
+     * @param bool $enabled If the page is under construction.
+     * @return void
+     */
     public static function showConstruction(bool $enabled = true): void
     {
         if (!self::$showingConstruction) {
             if ($enabled && !isset($_GET['force']) && $_GET['force'] != 'true') {
                 Utils::phpInit();
-                $activeLang = Utils::getStoredLang();
+                $activeLang = LangDriver::getStoredLang();
 
                 $title = new LangSet();
                 $contentTitle = new LangSet();
@@ -323,7 +306,7 @@ class Utils
                     <title><?php echo $title->get($activeLang)->getString(); ?></title>
                 </head>
                 <body>
-                    <?php echo Utils::getLangModal($activeLang); ?>
+                    <?php echo LangDriver::getLangModal(); ?>
                     <div class="construction_body_container">
                         <div class="construction_body">
                             <div class="construction_border top"></div>
@@ -343,121 +326,5 @@ class Utils
                 exit;
             }
         }
-    }
-
-    public static function getLangModal(Lang $activeLang): string
-    {
-        if (!self::$langModalRetrieved) {
-        $buttonTitle = new LangSet();
-        $changeLangStr = new LangSet();
-        try {
-            $buttonTitle->set(Lang::BULGARIAN, "Език на сайта");
-            $buttonTitle->set(Lang::CHINESE_CHINA, "网站语言");
-            $buttonTitle->set(Lang::CHINESE_TAIWAN, "網站語言");
-            $buttonTitle->set(Lang::CROATIAN, "Jezik web stranice");
-            $buttonTitle->set(Lang::CZECH, "Jazyk webu");
-            $buttonTitle->set(Lang::DANISH, "Sproget på siden");
-            $buttonTitle->set(Lang::DUTCH, "Taal van de website");
-            $buttonTitle->set(Lang::ENGLISH_UK, "Site Language");
-            $buttonTitle->set(Lang::ENGLISH_US, "Site Language");
-            $buttonTitle->set(Lang::FINNISH, "Sivuston kieli");
-            $buttonTitle->set(Lang::FRENCH, "Langue du site");
-            $buttonTitle->set(Lang::GERMAN, "Sprache der Webseite");
-            $buttonTitle->set(Lang::GREEK, "Γλώσσα ιστότοπου");
-            $buttonTitle->set(Lang::HINDI, "साइट की भाषा");
-            $buttonTitle->set(Lang::HUNGARIAN, "Weboldal nyelve");
-            $buttonTitle->set(Lang::INDONESIAN, "Bahasa Situs");
-            $buttonTitle->set(Lang::ITALIAN, "Lingua del sito");
-            $buttonTitle->set(Lang::JAPANESE, "サイトの言語");
-            $buttonTitle->set(Lang::KOREAN, "사이트 언어");
-            $buttonTitle->set(Lang::LITHUANIAN, "Svetainės kalba");
-            $buttonTitle->set(Lang::NORWEGIAN, "Nettstedets språk");
-            $buttonTitle->set(Lang::POLISH, "Język strony");
-            $buttonTitle->set(Lang::PORTUGUESE_BRAZILIAN, "Idioma do site");
-            $buttonTitle->set(Lang::ROMANIAN_ROMANIA, "Limba site-ului");
-            $buttonTitle->set(Lang::RUSSIAN, "Язык сайта");
-            $buttonTitle->set(Lang::SPANISH, "Idioma del sitio");
-            $buttonTitle->set(Lang::SPANISH_LATAM, "Idioma del sitio");
-            $buttonTitle->set(Lang::SWEDISH, "Webbplatsens språk");
-            $buttonTitle->set(Lang::THAI, "ภาษาของเว็บไซต์");
-            $buttonTitle->set(Lang::TURKISH, "Site Dili");
-            $buttonTitle->set(Lang::UKRAINIAN, "Мова сайту");
-            $buttonTitle->set(Lang::VIETNAMESE, "Ngôn ngữ của trang web");
-
-            $changeLangStr->set(Lang::BULGARIAN, "Смяна на езика?");
-            $changeLangStr->set(Lang::CHINESE_CHINA, "更改语言？");
-            $changeLangStr->set(Lang::CHINESE_TAIWAN, "更改語言？");
-            $changeLangStr->set(Lang::CROATIAN, "Promijeniti jezik?");
-            $changeLangStr->set(Lang::CZECH, "Změnit jazyk?");
-            $changeLangStr->set(Lang::DANISH, "Skift sprog?");
-            $changeLangStr->set(Lang::DUTCH, "Taal wijzigen?");
-            $changeLangStr->set(Lang::ENGLISH_UK, "Change Language?");
-            $changeLangStr->set(Lang::ENGLISH_US, "Change Language?");
-            $changeLangStr->set(Lang::FINNISH, "Vaihda kieltä?");
-            $changeLangStr->set(Lang::FRENCH, "Changer de langue ?");
-            $changeLangStr->set(Lang::GERMAN, "Sprache ändern?");
-            $changeLangStr->set(Lang::GREEK, "Αλλαγή γλώσσας;");
-            $changeLangStr->set(Lang::HINDI, "भाषा बदलें?");
-            $changeLangStr->set(Lang::HUNGARIAN, "Nyelv megváltoztatása?");
-            $changeLangStr->set(Lang::INDONESIAN, "Ubah bahasa?");
-            $changeLangStr->set(Lang::ITALIAN, "Cambiare lingua?");
-            $changeLangStr->set(Lang::JAPANESE, "言語を変更しますか？");
-            $changeLangStr->set(Lang::KOREAN, "언어를 변경하시겠습니까?");
-            $changeLangStr->set(Lang::LITHUANIAN, "Keisti kalbą?");
-            $changeLangStr->set(Lang::NORWEGIAN, "Endre språk?");
-            $changeLangStr->set(Lang::POLISH, "Zmień język?");
-            $changeLangStr->set(Lang::PORTUGUESE_BRAZILIAN, "Mudar o idioma?");
-            $changeLangStr->set(Lang::ROMANIAN_ROMANIA, "Schimbați limba?");
-            $changeLangStr->set(Lang::RUSSIAN, "Сменить язык?");
-            $changeLangStr->set(Lang::SPANISH, "¿Cambiar idioma?");
-            $changeLangStr->set(Lang::SPANISH_LATAM, "¿Cambiar idioma?");
-            $changeLangStr->set(Lang::SWEDISH, "Byta språk?");
-            $changeLangStr->set(Lang::THAI, "เปลี่ยนภาษา?");
-            $changeLangStr->set(Lang::TURKISH, "Dili değiştir?");
-            $changeLangStr->set(Lang::UKRAINIAN, "Змінити мову?");
-            $changeLangStr->set(Lang::VIETNAMESE, "Thay đổi ngôn ngữ?");
-        } catch (LanguageException $e) {
-            die($e->getMessage());
-        }
-
-        ob_start();
-        ?>
-        <link rel="stylesheet" href="/styles/lang_modal.css">
-
-        <div class="lang_modal_container">
-            <label title="<?php echo $buttonTitle->get($activeLang)->getString(); ?>" class="lang_modal_toggle_container" for="lang_modal_toggle_checkbox">
-                <?php echo SVG::LANGUAGE->get("8vh", "8vh"); ?>
-                <input type="checkbox" id="lang_modal_toggle_checkbox" hidden="hidden">
-            </label>
-            <div class="lang_modal_heading_container">
-                <div class="lang_modal_heading_title"><?php echo $buttonTitle->get($activeLang)->getString(); ?></div>
-                <div class="lang_modal_heading_language"><?php echo $activeLang->getNativeName(); ?></div>
-                <div class="lang_modal_heading_change"><?php echo $changeLangStr->get($activeLang)->getString(); ?></div>
-            </div>
-            <div class="lang_modal_selector_container">
-            <?php
-            foreach (Lang::cases() as $l) {
-                if ($l != Lang::UNKNOWN) {
-                ?>
-                    <a class="lang_modal_selector<?php echo $l === $activeLang ? " active" : ""; ?>" href="<?php echo preg_replace('/^\/(' . preg_quote(str_replace('-', '_', $activeLang->getLocale()), '/') . '|' . preg_quote(str_replace('_', '-', $activeLang->getLocale()), '/') . ')\b/', '/' . str_replace('-', '_', $l->getLocale()), $_SERVER['REQUEST_URI'], 1); ?>">
-
-                    <!-- TODO: Maybe make the entire link background a low-opacity, slightly blurred image of the country's flag with/without the icon. -->
-                    <div class="lang_modal_icon" style="background-image: url(<?php echo $l->getFlag(); ?>);"></div>
-                    <div class="lang_modal_text_container">
-                        <div class="lang_modal_text"><?php echo $l->getNativeName(); ?></div>
-                        <div class="lang_modal_subtext"><?php echo $l->getLanguageNameInLanguage($activeLang); ?></div>
-                    </div>
-                </a>
-                <?php
-                }
-            }
-            ?>
-            </div>
-        </div>
-        <?php
-            self::$langModalRetrieved = true;
-        return ob_get_clean();
-        }
-        return "";
     }
 }

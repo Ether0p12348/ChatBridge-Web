@@ -3,6 +3,7 @@
 use Ethanrobins\Chatbridge\Assets\SVG;
 use Ethanrobins\Chatbridge\Exception\LanguageException;
 use Ethanrobins\Chatbridge\Language\Lang;
+use Ethanrobins\Chatbridge\Language\LangDriver;
 use Ethanrobins\Chatbridge\Language\LangSet;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -10,7 +11,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 Utils::showConstruction();
 Utils::phpInit();
-$lang = Utils::getStoredLang();
+$lang = LangDriver::getStoredLang();
 
 
 $title = new LangSet();
@@ -277,7 +278,7 @@ Sứ mệnh của chúng tôi là xây dựng một cộng đồng trực tuyế
 </head>
 <body>
     <?php
-    echo Utils::getLangModal($lang);
+    echo LangDriver::getLangModal();
     echo SVG::CHATBRIDGE_ICON->get("50vh", "50vh") . "<br>";
     echo SVG::CHATBRIDGE_LOGO->get(null, "50vh") . "<br>";
     ?>
