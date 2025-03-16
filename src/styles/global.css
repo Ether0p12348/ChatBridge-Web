@@ -41,10 +41,10 @@
     --text-color: #fff;
     --light-text-color: #333;
 
-    --link-color: #6495ed;
-    --link-hover-color: #4169e1;
-    --light-link-color: #4169e1;
-    --light-link-hover-color: #324faa;
+    --link-color: #86abed;
+    --link-hover-color: #6b92ff;
+    --light-link-color: #6b92ff;
+    --light-link-hover-color: #4b7bff;
 
     --accent-color: var(--b);
     --subaccent-color: var(--b-40w);
@@ -95,6 +95,8 @@ body * {
     scrollbar-width: thin;
     scrollbar-color: var(--p-40w) transparent;
     transition: background-color 0.1s ease-in-out;
+    text-decoration: none;
+    color: inherit;
 }
 body *::-webkit-scrollbar {
     width: 0.5vh;
@@ -107,6 +109,14 @@ body *::-webkit-scrollbar-thumb {
 
 .svg-text-color {
     fill: var(--text-color);
+}
+
+.link {
+    color: var(--link-color);
+    cursor: pointer;
+}
+.link:hover {
+    color: var(--link-hover-color);
 }
 
 @media screen and (prefers-color-scheme: light) {
@@ -122,5 +132,11 @@ body *::-webkit-scrollbar-thumb {
     }
     .svg-text-color {
         fill: var(--light-text-color);
+    }
+    .link {
+        color: var(--light-link-color);
+    }
+    .link:hover {
+        color: var(--light-link-hover-color);
     }
 }

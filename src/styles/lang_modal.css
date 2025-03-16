@@ -1,7 +1,7 @@
 .lang_modal_container {
     margin: 0;
     padding: 0;
-    position: absolute;
+    position: fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,9 +15,9 @@
     width: 8vh;
     max-width: calc(100vw - 4vh);
 
-    background-color: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(2vh);
-    --webkit-backdrop-filter: blur(2vh);
+    background-color: rgba(51, 51, 51, 0.7);
+    backdrop-filter: blur(3vh);
+    --webkit-backdrop-filter: blur(3vh);
     border-radius: 1vh;
 
     box-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
@@ -27,7 +27,7 @@
     z-index: 100;
 }
 .lang_modal_container:has(#lang_modal_toggle_checkbox:checked) {
-    height: 75vh;
+    height: 96vh;
     width: 50vh;
 }
 .lang_modal_toggle_container {
@@ -55,8 +55,8 @@
     z-index: 101;
 }
 .lang_modal_toggle_container:has(#lang_modal_toggle_checkbox:checked) {
-    top: 1vh;
-    left: 1vh;
+    top: 3vh;
+    left: 3vh;
 }
 .lang_modal_toggle_container, .lang_modal_toggle_container * {
     cursor: pointer;
@@ -64,8 +64,81 @@
 .lang_modal_toggle_container:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+.lang_modal_heading_container {
+    margin: 0 0 0 10vh;
+    padding: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+    overflow: visible;
+
+    height: 14vh;
+    width: 40vh;
+
+    transform: translateX(40vh);
+    transition: transform 0.3s ease-in-out;
+}
+.lang_modal_toggle_container:has(#lang_modal_toggle_checkbox:checked) ~ .lang_modal_heading_container {
+    transform: translateX(0);
+}
+.lang_modal_heading_title {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: visible;
+
+    height: fit-content;
+    width: fit-content;
+
+    color: var(--b-40w);
+    font-size: 4vh;
+    line-height: 4vh;
+    text-align: center;
+    text-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
+
+    order: 1;
+}
+.lang_modal_heading_language {
+    margin: 1vh 0 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: visible;
+
+    height: fit-content;
+    width: fit-content;
+
+    font-size: 2.5vh;
+    line-height: 2.5vh;
+    text-align: center;
+    text-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
+
+    order: 2;
+}
+.lang_modal_heading_change {
+    margin: 1vh 0 0;
+    padding: 0;
+    position: relative;
+    display: block;
+    overflow: visible;
+
+    height: fit-content;
+    width: fit-content;
+
+    color: #bbb;
+    font-size: 2.5vh;
+    line-height: 2.5vh;
+    text-align: center;
+    text-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
+
+    order: 3;
+}
 .lang_modal_selector_container {
-    margin: 10vh 0 0;
+    margin: 0;
     padding: 0;
     position: relative;
     display: flex;
@@ -92,9 +165,6 @@
     justify-content: center;
     justify-items: start;
     overflow: clip;
-
-    text-decoration: none;
-    color: inherit;
 
     height: fit-content;
     width: 48vh; /* -2vh as opened .lang_modal_container */
@@ -180,14 +250,14 @@
     font-size: 2.5vh;
     line-height: 2.5vh;
 
-    color: #999;
+    color: #bbb;
 
     order: 2;
 }
 
 @media screen and (prefers-color-scheme: light) {
     .lang_modal_container {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: rgba(255, 255, 255, 0.7);
     }
     .lang_modal_toggle_container {
         filter: drop-shadow(0 0 1vh rgba(255, 255, 255, 0.5));
@@ -196,7 +266,21 @@
     .lang_modal_toggle_container:hover, .lang_modal_selector:hover {
         background-color: rgba(0, 0, 0, 0.1);
     }
+    .lang_modal_heading_title {
+        color: var(--b-20b);
+        text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    }
+    .lang_modal_heading_language {
+        text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    }
+    .lang_modal_heading_change {
+        color: #777;
+        text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    }
     .lang_modal_text_container * {
         text-shadow: 0 0 1vh rgba(255, 255, 255, 0.5);
+    }
+    .lang_modal_subtext {
+        color: #777;
     }
 }

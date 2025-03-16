@@ -5,7 +5,7 @@ namespace Ethanrobins\Chatbridge\Assets;
 enum SVG: string
 {
     case CHATBRIDGE_ICON = '<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"#{height}#{width}"
+<svg version="1.1" class="chatbridge_icon" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"#{height}#{width}"
 	 viewBox="300 300 1400 1400" style="enable-background:new 0 0 2000 2000;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:transparent;}
@@ -357,7 +357,7 @@ enum SVG: string
 </g>
 </svg>';
     case CHATBRIDGE_LOGO = '<!-- Generator: Adobe Illustrator 25.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"#{height}#{width}
+<svg version="1.1" class="chatbridge_logo" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"#{height}#{width}
 	 viewBox="300 750 1400 500" style="enable-background:new 0 0 2000 2000;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:transparent;}

@@ -8,6 +8,7 @@ use Ethanrobins\Chatbridge\Utils;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+Utils::showConstruction();
 Utils::phpInit();
 $lang = Utils::getStoredLang();
 
