@@ -20,10 +20,11 @@ class SectionConfig extends DocConfig
      * @param string $title The title of the section.
      * @param string $path The path to the section home.md.
      * @param array $pages The nested pages or sections.
+     * @param string|null $link The link to get to this page.
      * @throws InaccessibleFileException
      */
-    public function __construct(string $title, string $path, array $pages) {
-        parent::__construct($title, $path);
+    public function __construct(string $title, string $path, array $pages, ?string $link = null) {
+        parent::__construct($title, $path, $link);
         $this->type = Type::SECTION;
 
         if (!empty($pages)) {

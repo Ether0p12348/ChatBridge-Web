@@ -1,14 +1,28 @@
 {
+  "type": "root",
+  "title": "ChatBridge Docs",
+  "path": "/docs/en_US/home.md",
+  "link": "https://chatbridge.app/en_US/docs/home",
+  "pages": [
+    {
+      "type": "page",
+      "title": "Test",
+      "path": "/docs/en_US/test.md",
+      "link": "https://chatbridge.app/en_US/docs/test"
+    }
+  ],
   "static_pages": [
     {
       "type": "page",
       "title": "Terms of Service",
-      "path": "/global_docs/en_US/terms.md"
+      "path": "/global_docs/en_US/terms.md",
+      "link": "https://chatbridge.app/en_US/terms"
     },
     {
       "type": "page",
       "title": "Privacy Policy",
-      "path": "/global_docs/en_US/privacy.md"
+      "path": "/global_docs/en_US/privacy.md",
+      "link": "https://chatbridge.app/en_US/privacy"
     }
   ]
 }

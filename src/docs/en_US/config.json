@@ -2,11 +2,13 @@
   "type": "root",
   "title": "ChatBridge Docs",
   "path": "/docs/en_US/home.md",
+  "link": "https://chatbridge.app/en_US/docs/home",
   "pages": [
     {
       "type": "page",
       "title": "Test",
-      "path": "/docs/en_US/test.md"
+      "path": "/docs/en_US/test.md",
+      "link": "https://chatbridge.app/en_US/docs/test"
     }
   ]
 }

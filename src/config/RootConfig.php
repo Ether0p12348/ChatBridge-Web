@@ -27,11 +27,12 @@ class RootConfig extends DocConfig
      * @param string $title The title of the documentation.
      * @param string $path The root's home.md path.
      * @param array $pages The nested pages or sections at the root level.
+     * @param string|null $link The link to get to this page.
      * @throws DocumentationConfigurationException
      * @throws InaccessibleFileException
      */
-    public function __construct(string $title, string $path, array $pages) {
-        parent::__construct($title, $path);
+    public function __construct(string $title, string $path, array $pages, ?string $link = null) {
+        parent::__construct($title, $path, $link);
         $this->type = Type::ROOT;
         if (!empty($pages)) {
             $this->pages = $pages;
@@ -49,7 +50,7 @@ class RootConfig extends DocConfig
 
         foreach ($data['static_pages'] as $p) {
             if ($p['type'] === Type::PAGE->value) {
-                $this->staticPages[] = new DocConfig($p['title'], $p['path']);
+                $this->staticPages[] = new DocConfig($p['title'], $p['path'], $p['link']);
             } else if ($p['type'] === Type::SECTION->value) {
                 $this->staticPages[] = self::getPagesFromSection($p);
             } else {
@@ -87,13 +88,14 @@ class RootConfig extends DocConfig
      */
     private static function getPagesFromSection(array $section): SectionConfig
     {
+        $activeLang = LangDriver::getStoredLang();
         $sectionPages = [];
         foreach ($section as $p) {
             if ($p['type'] === Type::PAGE->value) {
                 if (!isset($p['path']) || !isset($p['title'])) {
                     die("Missing 'path' or 'title' for page.");
                 }
-                $sectionPages[] = new DocConfig($p['title'], $p['path']);
+                $sectionPages[] = new DocConfig($p['title'], $p['path'], $p['link']);
             } else if ($p['type'] === Type::SECTION->value) {
                 $sectionPages[] = self::getPagesFromSection($p);
             } else {
@@ -103,7 +105,7 @@ class RootConfig extends DocConfig
         if (!isset($section['path']) || !isset($section['title'])) {
             die("Missing 'path' or 'title' for page.");
         }
-        return new SectionConfig($section['title'], $section['path'], $sectionPages);
+        return new SectionConfig($section['title'], $section['path'], $sectionPages, $section['link']);
     }
 
     /**
@@ -117,13 +119,14 @@ class RootConfig extends DocConfig
     public static function fromConfig(string $filePath): self
     {
         $rootConfigFile = $filePath;
+        $activeLang = LangDriver::getStoredLang();
 
         $data = Utils::getJsonData($rootConfigFile);
 
         $rootPages = [];
         foreach ($data['pages'] as $p) {
             if ($p['type'] === Type::PAGE->value) {
-                $rootPages[] = new DocConfig($p['title'], $p['path']);
+                $rootPages[] = new DocConfig($p['title'], $p['path'], $p['link']);
             } else if ($p['type'] === Type::SECTION->value) {
                 $rootPages[] = self::getPagesFromSection($p);
             } else {
@@ -131,6 +134,6 @@ class RootConfig extends DocConfig
             }
         }
 
-        return new self($data['title'], $data['path'], $rootPages);
+        return new self($data['title'], $data['path'], $rootPages, $data['link']);
     }
 }

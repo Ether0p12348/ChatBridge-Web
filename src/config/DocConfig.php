@@ -27,18 +27,24 @@ class DocConfig
      * @var string The path to the local .md file.
      */
     private string $path;
+    /**
+     * @var string|null The link to get to the page
+     */
+    private ?string $link;
 
     /**
      * Constructs a new configuration item.
      *
      * @param string $title The page title.
      * @param string $path The path to the local .md file.
+     * @param string|null $link The link to get to this page.
      * @throws InaccessibleFileException
      */
-    public function __construct(string $title, string $path) {
+    public function __construct(string $title, string $path, ?string $link = null) {
         $this->type = Type::PAGE;
         $this->title = $title;
         $this->path = $path;
+        $this->link = $link;
 
         Utils::checkFile($this->getAbsolutePath());
 
@@ -73,6 +79,15 @@ class DocConfig
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * Returns the link to access the page.
+     * @return string|null The page's link.
+     */
+    public function getLink(): ?string
+    {
+        return $this->link;
     }
 
     /**

@@ -15,8 +15,16 @@ $lang = LangDriver::getStoredLang();
 
 $file = $_GET['file'] ?? null;
 if ($file != null) {
-    $fallbackFile = preg_replace('#^/?([^/]+/)(.+)#', '/$1en_US/$2', $file);
-    $file = preg_replace('#^/?([^/]+/)(.+)#', '/$1' . str_replace('-', '_', $lang->getLocale()) . '/$2', $file); // docs/file.md -> docs/en_US/file.md
+    if ($file === '/privacy.md') {
+        $fallbackFile = '/global_docs/en_US/privacy.md';
+        $file = str_replace('/', "/global_docs/" . str_replace('-', '_', $lang->getLocale()) . "/", $file);
+    } else if ($file === '/terms.md') {
+        $fallbackFile = '/global_docs/en_US/terms.md';
+        $file = str_replace('/', "/global_docs/" . str_replace('-', '_', $lang->getLocale()) . "/", $file);
+    } else {
+        $fallbackFile = preg_replace('#^/?([^/]+/)(.+)#', '/$1en_US/$2', $file); // For if there is no translated version for the activeLang
+        $file = preg_replace('#^/?([^/]+/)(.+)#', '/$1' . str_replace('-', '_', $lang->getLocale()) . '/$2', $file); // docs/file.md -> docs/en_US/file.md
+    }
 }
 
 try {
@@ -41,11 +49,13 @@ try {
 <body>
     <?php
     echo LangDriver::getLangModal();
+    echo "<div style='overflow: auto; height: 100vh; width: 100vw;'>";
     try {
         echo MarkdownDriver::getNav($absolutePath);
     } catch (DocumentationConfigurationException|InaccessibleFileException $e) {
         print_r($e);
     }
+    echo "</div>";
     ?>
 </body>
 </html>
