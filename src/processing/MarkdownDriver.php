@@ -3,6 +3,7 @@ namespace Ethanrobins\Chatbridge\Processing;
 
 use Ethanrobins\Chatbridge\Config\RootConfig;
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
 use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Utils;
 
@@ -27,10 +28,12 @@ class MarkdownDriver
     /**
      * Verifies a .md file is readable.
      * @param string|null $path Path from web root
+     * @param string|null $fallbackPath Fallback path from web root - the file to be used if original is inaccessible.
      * @return string The absolute path to .md file. No return if failed.
      * @throws MarkdownException
+     * @throws InaccessibleFileException
      */
-    public static function checkMd(string|null $path) :string
+    public static function checkMd(?string $path, ?string $fallbackPath = null) :string
     {
         if (!$path) {
             throw new MarkdownException("Bad Request: No file specified.", 400);
@@ -39,26 +42,22 @@ class MarkdownDriver
         $path = ltrim($path, '/');
         $filePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $path;
 
+        $fallbackPath = ltrim($fallbackPath, '/');
+        $fallbackFilePath = $_SERVER['DOCUMENT_ROOT'] . '/' . $fallbackPath;
+
         if (str_contains($path, 'markdown_driver')) {
             throw new MarkdownException("403 Forbidden: The requested file has been disallowed.", 403, null, $filePath);
         }
 
-        if (!file_exists($filePath)) {
-            throw new MarkdownException("404 Not Found: The requested file does not exist.", 404, null, $filePath);
-        }
-
-        if (!is_readable($filePath)) {
-            throw new MarkdownException("403 Forbidden: The requested file is not accessible.", 403, null, $filePath);
-        }
-
-        return $filePath;
+        return Utils::checkFile($filePath, $fallbackFilePath);
     }
 
     /**
      * Builds and returns the navigation based on the page's config.json and internal headings.
      * @param string $path Absolute path to .md file. Recommended to use {@link MarkdownDriver::checkMd()}
      * @return string The processed navigation in HTML format.
-     * @throws MarkdownException|DocumentationConfigurationException
+     * @throws DocumentationConfigurationException
+     * @throws InaccessibleFileException
      */
     public static function getNav(string $path) :string
     {

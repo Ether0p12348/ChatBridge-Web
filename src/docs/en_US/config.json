@@ -1,12 +1,12 @@
 {
   "type": "root",
   "title": "ChatBridge Docs",
-  "path": "/docs/home.md",
+  "path": "/docs/en_US/home.md",
   "pages": [
     {
       "type": "page",
       "title": "Test",
-      "path": "/docs/test.md"
+      "path": "/docs/en_US/test.md"
     }
   ]
 }

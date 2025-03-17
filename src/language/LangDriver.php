@@ -236,9 +236,8 @@ class LangDriver
                         if ($l != Lang::UNKNOWN) {
                             ?>
                             <a class="lang_modal_selector<?php echo $l === $activeLang ? " active" : ""; ?>" href="<?php echo preg_replace('/^\/(' . preg_quote(str_replace('-', '_', $activeLang->getLocale()), '/') . '|' . preg_quote(str_replace('_', '-', $activeLang->getLocale()), '/') . ')\b/', '/' . str_replace('-', '_', $l->getLocale()), $_SERVER['REQUEST_URI'], 1); ?>">
-
                                 <!-- TODO: Maybe make the entire link background a low-opacity, slightly blurred image of the country's flag with/without the icon. -->
-                                <div class="lang_modal_icon" style="background-image: url(<?php echo $l->getFlag()->getUrl(); ?>);"></div>
+                                <div class="lang_modal_icon" title="<?php echo $l->getFlag()->getCountryName($activeLang); ?>" style="background-image: url(<?php echo $l->getFlag()->getUrl(); ?>);"></div>
                                 <div class="lang_modal_text_container">
                                     <div class="lang_modal_text"><?php echo $l->getNativeName(); ?></div>
                                     <div class="lang_modal_subtext"><?php echo $l->getLanguageNameInLanguage($activeLang); ?></div>

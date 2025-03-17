@@ -4,7 +4,7 @@ namespace Ethanrobins\Chatbridge\Exception;
 
 use Exception;
 
-class MarkdownException extends Exception
+class InaccessibleFileException extends Exception
 {
     private string $details;
 

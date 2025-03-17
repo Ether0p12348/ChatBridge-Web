@@ -2,14 +2,14 @@
 
 namespace Ethanrobins\Chatbridge\Config;
 
-use Ethanrobins\Chatbridge\Exception\MarkdownException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
+use Ethanrobins\Chatbridge\Utils;
 
 /**
  * Represents a general configuration item such as a page or section.
  */
 class DocConfig
 {
-    // TODO: Figure out a way to include translation data
     /**
      * @var array Stores navigation items created during runtime.
      */
@@ -33,19 +33,14 @@ class DocConfig
      *
      * @param string $title The page title.
      * @param string $path The path to the local .md file.
-     * @throws MarkdownException
+     * @throws InaccessibleFileException
      */
     public function __construct(string $title, string $path) {
         $this->type = Type::PAGE;
         $this->title = $title;
         $this->path = $path;
 
-        if (!file_exists($this->getAbsolutePath())) {
-            throw new MarkdownException("404 Not Found: " . $this->getAbsolutePath() . " does not exist!", 404);
-        }
-        if (!is_readable($this->getAbsolutePath())) {
-            throw new MarkdownException("403 Forbidden: " . $this->getAbsolutePath() . " is not readable!", 403);
-        }
+        Utils::checkFile($this->getAbsolutePath());
 
         self::$navItems[] = $this;
     }

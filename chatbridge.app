@@ -1,4 +1,4 @@
-# THIS IS SAVED HERE PURELY FOR STORING (chatbridge.app nginx site configuration)
+# THIS IS HERE PURELY FOR SAVING (chatbridge.app nginx site configuration)
 
 # Main server block
 server {
@@ -20,7 +20,7 @@ server {
     if ($request_uri ~* ^(.*/)(index(?:\.php)?)$) {
         return 301 $1;
     }
-    # rewrite any ISO 3166-1 formatted first directives to the url without it, extending the $args
+    # rewrite any ISO 3166-1 formatted first directives to the url without it, extending $args
     rewrite "^/([a-zA-Z]{2}([-_][a-zA-Z0-9]{0,5})?)(/.*)?$" "/$3?$args&lang=$1" last;
     # Try in order:
     # 1. The file with extension (redirected to extensionless via conditional above)

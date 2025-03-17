@@ -2,7 +2,7 @@
 
 namespace Ethanrobins\Chatbridge\Config;
 
-use Ethanrobins\Chatbridge\Exception\MarkdownException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
 
 /**
  * Represents a section in the configuration, containing multiple nested pages or sections.
@@ -20,7 +20,7 @@ class SectionConfig extends DocConfig
      * @param string $title The title of the section.
      * @param string $path The path to the section home.md.
      * @param array $pages The nested pages or sections.
-     * @throws MarkdownException
+     * @throws InaccessibleFileException
      */
     public function __construct(string $title, string $path, array $pages) {
         parent::__construct($title, $path);

@@ -1,6 +1,7 @@
 <?php
 
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
 use Ethanrobins\Chatbridge\Exception\MarkdownException;
 use Ethanrobins\Chatbridge\Language\LangDriver;
 use Ethanrobins\Chatbridge\Processing\MarkdownDriver;
@@ -13,12 +14,16 @@ Utils::phpInit();
 $lang = LangDriver::getStoredLang();
 
 $file = $_GET['file'] ?? null;
+if ($file != null) {
+    $fallbackFile = preg_replace('#^/?([^/]+/)(.+)#', '/$1en_US/$2', $file);
+    $file = preg_replace('#^/?([^/]+/)(.+)#', '/$1' . str_replace('-', '_', $lang->getLocale()) . '/$2', $file); // docs/file.md -> docs/en_US/file.md
+}
 
 try {
-    $absolutePath = MarkdownDriver::checkMd($file);
-} catch (MarkdownException $e) {
+    $absolutePath = MarkdownDriver::checkMd($file, $fallbackFile ?? null);
+} catch (MarkdownException|InaccessibleFileException $e) {
     echo $e->getDetails() . "<br>";
-    die($e->getMessage());
+    die($e->getMessage() . " -> " . $e->getTraceAsString());
 }
 
 // TODO: Build the driver with MarkdownDriver class.
@@ -38,7 +43,7 @@ try {
     echo LangDriver::getLangModal();
     try {
         echo MarkdownDriver::getNav($absolutePath);
-    } catch (DocumentationConfigurationException|MarkdownException $e) {
+    } catch (DocumentationConfigurationException|InaccessibleFileException $e) {
         print_r($e);
     }
     ?>

@@ -3,6 +3,7 @@ namespace Ethanrobins\Chatbridge;
 
 use Ethanrobins\Chatbridge\Assets\SVG;
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
 use Ethanrobins\Chatbridge\Exception\LanguageException;
 use Ethanrobins\Chatbridge\Language\Lang;
 use Ethanrobins\Chatbridge\Language\LangDriver;
@@ -126,14 +127,10 @@ class Utils
      * @param string $absoluteFilePath The absolute path to the JSON file.
      * @return array The parsed data from the JSON file as an associative array.
      * @throws DocumentationConfigurationException
+     * @throws InaccessibleFileException
      */
     public static function getJsonData(string $absoluteFilePath): array {
-        if (!file_exists($absoluteFilePath)) {
-            throw new DocumentationConfigurationException("File not found: " . $absoluteFilePath);
-        }
-        if (!is_readable($absoluteFilePath)) {
-            throw new DocumentationConfigurationException("File is not readable: " . $absoluteFilePath);
-        }
+        $absoluteFilePath = Utils::checkFile($absoluteFilePath);
 
         $jsonContents = file_get_contents($absoluteFilePath);
 
@@ -158,21 +155,57 @@ class Utils
      */
     public static function getConfigPath(string $absoluteFilePath): string
     {
+        // TODO: Check compatibility with new localized paths.
         $srcKeyword = "src/";
         $srcPos = strpos($absoluteFilePath, $srcKeyword);
         if ($srcPos === false) {
-            throw new DocumentationConfigurationException("The path is outside of the root src/ directory.");
+            throw new DocumentationConfigurationException(
+                "The path is outside of the root src/ directory."
+            );
         }
 
         $afterSrc = substr($absoluteFilePath, $srcPos + strlen($srcKeyword));
         $parts = explode('/', $afterSrc);
 
-        if (empty($parts[0])) {
-            throw new DocumentationConfigurationException("This file does not belong to a specific documentation.");
+        // Check if the path contains at least two levels: root and locale
+        if (count($parts) < 2 || empty($parts[0]) || empty($parts[1])) {
+            throw new DocumentationConfigurationException(
+                "The file does not appear to be in a valid localized documentation structure."
+            );
         }
 
         $rootDir = $parts[0];
-        return substr($absoluteFilePath, 0, $srcPos + strlen($srcKeyword) + strlen($rootDir)) . '/config.json';
+        $localeDir = $parts[1];
+
+        return substr($absoluteFilePath, 0, $srcPos + strlen($srcKeyword) + strlen($rootDir) + strlen($localeDir) + 1) . '/config.json';
+
+    }
+
+    /**
+     * Check if a file at a path is accessible.
+     * @param string $absoluteFilePath The original path.
+     * @param string|null $fallbackPath Fallback path for if original path is missing or can't be read.
+     * @return string Either the original path or the fallback path.
+     * @throws InaccessibleFileException If fallback path is null or inaccessible and the original file is inaccessible.
+     */
+    public static function checkFile(string $absoluteFilePath, ?string $fallbackPath = null): string
+    {
+        $returnPath = $absoluteFilePath;
+        if (!file_exists($returnPath)) {
+            if ($fallbackPath === null) {
+                throw new InaccessibleFileException("File not found: " . $returnPath);
+            }
+            $returnPath = self::checkFile($fallbackPath);
+        }
+
+        if (!is_readable($returnPath)) {
+            if ($fallbackPath === null) {
+                throw new InaccessibleFileException("File not readable: " . $returnPath);
+            }
+            $returnPath = self::checkFile($fallbackPath);
+        }
+
+        return $returnPath;
     }
 
     /**
@@ -182,6 +215,7 @@ class Utils
      */
     public static function showConstruction(bool $enabled = true): void
     {
+        // TODO: Check if this is compatible with single-documentation page content construction.
         if (!self::$showingConstruction) {
             if ($enabled && !isset($_GET['force']) && $_GET['force'] != 'true') {
                 Utils::phpInit();

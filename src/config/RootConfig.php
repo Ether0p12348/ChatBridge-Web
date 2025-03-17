@@ -3,7 +3,8 @@
 namespace Ethanrobins\Chatbridge\Config;
 
 use Ethanrobins\Chatbridge\Exception\DocumentationConfigurationException;
-use Ethanrobins\Chatbridge\Exception\MarkdownException;
+use Ethanrobins\Chatbridge\Exception\InaccessibleFileException;
+use Ethanrobins\Chatbridge\Language\LangDriver;
 use Ethanrobins\Chatbridge\Utils;
 
 /**
@@ -26,7 +27,8 @@ class RootConfig extends DocConfig
      * @param string $title The title of the documentation.
      * @param string $path The root's home.md path.
      * @param array $pages The nested pages or sections at the root level.
-     * @throws MarkdownException|DocumentationConfigurationException
+     * @throws DocumentationConfigurationException
+     * @throws InaccessibleFileException
      */
     public function __construct(string $title, string $path, array $pages) {
         parent::__construct($title, $path);
@@ -35,7 +37,13 @@ class RootConfig extends DocConfig
             $this->pages = $pages;
         }
 
-        $rootConfigFile = $_SERVER['DOCUMENT_ROOT'] . "/config.json";
+        $activeLang = LangDriver::getStoredLang();
+
+        try {
+            $rootConfigFile = Utils::checkFile($_SERVER['DOCUMENT_ROOT'] . "/global_docs" . str_replace('-', '_', $activeLang->getLocale()) . "/config.json", $_SERVER['DOCUMENT_ROOT'] . "/global_docs/en_US/config.json");
+        } catch (InaccessibleFileException $e) {
+            die("No global config.json found: " . $e->getMessage());
+        }
 
         $data = Utils::getJsonData($rootConfigFile);
 
@@ -75,7 +83,7 @@ class RootConfig extends DocConfig
      *
      * @param array $section The section data from the configuration file.
      * @return SectionConfig The constructed section.
-     * @throws MarkdownException
+     * @throws InaccessibleFileException
      */
     private static function getPagesFromSection(array $section): SectionConfig
     {
@@ -103,7 +111,8 @@ class RootConfig extends DocConfig
      *
      * @param string $filePath The absolute path to the configuration JSON file.
      * @return self The constructed RootConfig instance.
-     * @throws MarkdownException|DocumentationConfigurationException
+     * @throws DocumentationConfigurationException
+     * @throws InaccessibleFileException
      */
     public static function fromConfig(string $filePath): self
     {
@@ -118,7 +127,7 @@ class RootConfig extends DocConfig
             } else if ($p['type'] === Type::SECTION->value) {
                 $rootPages[] = self::getPagesFromSection($p);
             } else {
-                throw new MarkdownException("Invalid static page type: " . $p['type'], 404);
+                throw new DocumentationConfigurationException("Invalid static page type: " . $p['type'], 404);
             }
         }
 
